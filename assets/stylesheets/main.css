@@ -1,0 +1,41 @@
+header {
+    text-align: center;
+}
+
+.container {
+text-align: center;
+}
+
+.logo {
+    height: 240px;
+    display: block;
+    margin: 0 auto;
+    padding-left: 43px;
+}
+
+h2 {
+    margin-top: -120px;
+}
+
+.container-left {
+border: 2px solid rgb(4, 4, 104);
+display: inline-block;
+width: 30%;
+margin-left: 10px;
+margin-right: 10px;
+}
+
+.container-right {
+border: 2px solid rgb(4, 4, 104);
+display: inline-block;
+width: 60%;
+margin-left: 10px;
+margin-right: 10px;
+}
+
+.star-image {
+    display: flex;
+    flex-direction: row;
+    height: 35px;
+    float: left;
+}
