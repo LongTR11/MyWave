@@ -3,10 +3,13 @@ function getApiData(beach, callback) {
         return b.name === beach;
     });
 
-    let currentTime = new Date().getTime();
-     console.log(currentTime);
+    // let currentTime = Math.round(new Date().getTime() / 1000);
+    let currentTime = new Date();
+    let currentHour = currentTime.getHours() + 2;
+    currentTime.setHours(currentHour, 0, 0, 0);
+    console.log(currentTime.getTime() / 1000);
     $.ajax({
-        url: `http://localhost:3000/point?lat=${beachData.lat}&lng=${beachData.lng}&start=${currentTime}`,
+        url: `http://localhost:3000/point?lat=${beachData.lat}&lng=${beachData.lng}&start=${currentTime.getTime() / 1000}`,
         dataType: 'json',
         contentType: 'application/json',
         success: callback
@@ -42,20 +45,17 @@ function populateLocationsDropdown() {
 $('form').submit(function (event) {
     event.preventDefault();
     let chosenBeach = $('#js-locations').val()
-    getApiData(chosenBeach, twoDaysData);
+    getApiData(chosenBeach, createResultMap);
 })
 
-const timeMap = {
-    dayOne: [6, 9, 12, 15, 18, 20,],
-    dayTwo: [30, 33, 36, 39, 42, 44]
-}
 
-function twoDaysData(data) {
+function createResultMap(data) {
     data = JSON.parse(data);
+    console.log(data);
     let dayOneData = [];
-    timeMap.dayOne.forEach(function (hour) {
-        dayOneData.push(data.hours[hour])
-    })
+    for (let i=0; i < 5; i++) {
+        dayOneData.push(data.hours[i])
+    };
     let dayOneResultMap = dayOneData.map(function (d) {
         let initialWaveRating = d.swellPeriod[1].value * (d.swellHeight[1].value) * 3.28084;
         // 3.28084 is the conversion for meters to feet
@@ -68,32 +68,24 @@ function twoDaysData(data) {
             initialWaveRating, swellDirection, windSpeed, windDirection
         };
     })
-    let dayTwoData = [];
-    timeMap.dayTwo.forEach(function (hour) {
-        dayTwoData.push(data.hours[hour])
-    })
-    let dayTwoResultMap = dayTwoData.map(function (d) {
-        let initialWaveRating = d.swellPeriod[1].value * (d.swellHeight[1].value + 1) * 3.28084;
-        // 3.28084 is the conversion for meters to feet
-        let swellDirection = d.swellDirection[1].value;
-        let windSpeed= d.windSpeed[1].value;
-        let windDirection = d.windDirection[1].value;
-
-
-        return {
-            initialWaveRating, swellDirection, windSpeed, windDirection
-        };
-    })
-    console.log(data);
+    
+   
     console.log(dayOneResultMap);
     beginnerTemplate(dayOneResultMap);
 }
 populateLocationsDropdown();
 
+function calculateHour(hour) {
+    if (hour > 12) {
+        hour = hour - 12;
+    }
+    return hour;
+}
 // Put all math conditional stuff in here 
 function createRatingData(results) {
     let ratingFormula = {};
-    const indexMap = {0: '6:00 AM', 1: '9:00 AM', 2: '12:00 PM', 3: '3:00 PM', 4: '6:00 PM', 5:'8:00 PM'};
+    let caurrentHour = new Date().getHours() + 1;
+    const indexMap = {0: `${calculateHour(currentHour)}:00`, 1: `${calculateHour(currentHour + 1)}:00`, 2: `${calculateHour(currentHour + 2)}:00`, 3: `${calculateHour(currentHour+ 3)}:00`, 4: `${calculateHour(currentHour + 4)}:00`, 5:`${calculateHour(currentHour +5)}:00`};
     for (let h=0; h < results.length; h++) {
         ratingFormula[indexMap[h]] = Math.round(3 + results[h].initialWaveRating / 8);
     }
@@ -118,15 +110,10 @@ function beginnerTemplate(dayOneResults) {
         ac. Quisque auctor urna lectus, eu ultrices massa dapibus id. Donec in eros velit. Vestibulum pretium
         luctus turpis in feugiat. Sed eleifend viverra metus eget sollicitudin. Proin eu felis nisi. Vestibulum
         vel lobortis purus, et maximus nisl. Maecenas volutpat rhoncus consectetur. Nulla molestie ex in dapibus
-        consectetur. Cras maximus sem non nulla varius, in pulvinar tortor placerat. Donec at convallis lectus,
-        vel pharetra lorem. Ut hendrerit nunc elit, at placerat leo dignissim et. Mauris sagittis arcu non risus
-        sagittis luctus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
-        Donec tincidunt quis augue eu rutrum. Vivamus convallis ante lacus, a tempus ante gravida ut. Integer
-        sed orci ac libero porta consequat at a dui. Vestibulum venenatis neque et finibus iaculis. Etiam porttitor
-        felis et lorem convallis, at sodales nisi volutpath</p>
+        consectetur. Cras maximus sem non nulla varius, in pulvinar tortor placerat. Donec at </p>
 </section>
 <section role="section">
-    <ul class="info-boxes>
+    <ul class="info-boxes">
         <li>Swell</li>
         <li>Size</li>
         <li>Direction</li>
