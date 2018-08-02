@@ -5,7 +5,7 @@ function getApiData(beach, callback) {
 
     // let currentTime = Math.round(new Date().getTime() / 1000);
     let currentTime = new Date();
-    let currentHour = currentTime.getHours() + 2;
+    let currentHour = currentTime.getHours() + 1;
     currentTime.setHours(currentHour, 0, 0, 0);
     console.log(currentTime.getTime() / 1000);
     $.ajax({
@@ -57,11 +57,19 @@ function createResultMap(data) {
         dayOneData.push(data.hours[i])
     };
     let dayOneResultMap = dayOneData.map(function (d) {
-        let initialWaveRating = d.swellPeriod[1].value * (d.swellHeight[1].value) * 3.28084;
+        let initialWaveRating = 0;
         // 3.28084 is the conversion for meters to feet
-        let swellDirection = d.swellDirection[1].value;
-        let windSpeed = d.windSpeed[1].value;
-        let windDirection = d.windDirection[1].value;
+        let swellDirection= 0;
+        let windSpeed= 0;
+        let windDirection= 0;
+
+            if (d.swellPeriod[1] && d.swellHeight[1] && d.swellDirection[1] && d.windSpeed[1] && d.windDirection[1]) {
+                initialWaveRating = d.swellPeriod[1].value * (d.swellHeight[1].value) * 3.28084;
+                // 3.28084 is the conversion for meters to feet
+                swellDirection = d.swellDirection[1].value;
+                windSpeed = d.windSpeed[1].value;
+                windDirection = d.windDirection[1].value;
+            }
 
 
         return {
@@ -84,21 +92,30 @@ function calculateHour(hour) {
 // Put all math conditional stuff in here 
 function createRatingData(results) {
     let ratingFormula = {};
-    let caurrentHour = new Date().getHours() + 1;
+    let currentHour = new Date().getHours() + 1;
     const indexMap = {0: `${calculateHour(currentHour)}:00`, 1: `${calculateHour(currentHour + 1)}:00`, 2: `${calculateHour(currentHour + 2)}:00`, 3: `${calculateHour(currentHour+ 3)}:00`, 4: `${calculateHour(currentHour + 4)}:00`, 5:`${calculateHour(currentHour +5)}:00`};
     for (let h=0; h < results.length; h++) {
+        if(results[h]) {
         ratingFormula[indexMap[h]] = Math.round(3 + results[h].initialWaveRating / 8);
+    } else {
+        ratingFormula[indexMap[h]] = false;
+    }
     }
     return ratingFormula;
 }
 
 function ratingTemplate(rating) {
     let template = '';
-    for (let i=0; i < rating; i++) {
-        template += `
-         <span><img class="star-image" src="images/starRating.jpeg"></span>
-        `;
+    if (rating) {
+        for (let i=0; i < rating; i++) {
+            template += `
+             <span><img class="star-image" src="images/starRating.jpeg"></span>
+            `;
+        }
+    } else {
+        template = "Not Enough Data";
     }
+ 
     return template;
 }
 
