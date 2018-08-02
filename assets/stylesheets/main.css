@@ -33,9 +33,28 @@ margin-left: 10px;
 margin-right: 10px;
 }
 
+.info-boxes {
+    display: flex;
+    justify-content: space-evenly;
+    ;
+}
+
+.info-boxes > li {
+    height: 140px;
+    width: 100px;
+    border: 2px solid black;
+}
+
 .star-image {
     display: flex;
     flex-direction: row;
     height: 35px;
-    float: left;
+    
 }
+
+.star-box {
+    display: inline-flex;
+    justify-content: flex-start;
+    
+}
+

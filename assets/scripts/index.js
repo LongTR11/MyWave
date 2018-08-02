@@ -53,7 +53,7 @@ function createResultMap(data) {
     data = JSON.parse(data);
     console.log(data);
     let dayOneData = [];
-    for (let i=0; i < 5; i++) {
+    for (let i=0; i < 6; i++) {
         dayOneData.push(data.hours[i])
     };
     let dayOneResultMap = dayOneData.map(function (d) {
@@ -63,6 +63,7 @@ function createResultMap(data) {
         let windSpeed= 0;
         let windDirection= 0;
 
+        
             if (d.swellPeriod[1] && d.swellHeight[1] && d.swellDirection[1] && d.windSpeed[1] && d.windDirection[1]) {
                 initialWaveRating = d.swellPeriod[1].value * (d.swellHeight[1].value) * 3.28084;
                 // 3.28084 is the conversion for meters to feet
@@ -84,18 +85,21 @@ function createResultMap(data) {
 populateLocationsDropdown();
 
 function calculateHour(hour) {
-    if (hour > 12) {
-        hour = hour - 12;
+    if (hour > 24) {
+      hour = hour - 24;
+    } else if(hour > 12) {
+      hour = hour - 12;
     }
     return hour;
-}
+  }
+
 // Put all math conditional stuff in here 
 function createRatingData(results) {
     let ratingFormula = {};
     let currentHour = new Date().getHours() + 1;
     const indexMap = {0: `${calculateHour(currentHour)}:00`, 1: `${calculateHour(currentHour + 1)}:00`, 2: `${calculateHour(currentHour + 2)}:00`, 3: `${calculateHour(currentHour+ 3)}:00`, 4: `${calculateHour(currentHour + 4)}:00`, 5:`${calculateHour(currentHour +5)}:00`};
     for (let h=0; h < results.length; h++) {
-        if(results[h]) {
+        if (results[h].initialWaveRating && results[h].swellDirection && results[h].windDirection && results[h].windSpeed) {
         ratingFormula[indexMap[h]] = Math.round(3 + results[h].initialWaveRating / 8);
     } else {
         ratingFormula[indexMap[h]] = false;
@@ -109,11 +113,11 @@ function ratingTemplate(rating) {
     if (rating) {
         for (let i=0; i < rating; i++) {
             template += `
-             <span><img class="star-image" src="images/starRating.jpeg"></span>
+             <span class="star-box"><img class="star-image" src="images/starRating.jpeg"></span>
             `;
         }
     } else {
-        template = "Not Enough Data";
+        template = "Sorry! Not Enough Data For This Hour";
     }
  
     return template;
