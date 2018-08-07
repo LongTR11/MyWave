@@ -50,8 +50,8 @@ let SPOTS = [
         lng: -76.7428718,
         minSwell: 90,
         maxSwell: 225,
-        minWind: "315, 0",
-        maxWind: "359, 45", 
+        minWind: [315, 360],
+        maxWind: [0, 45], 
         tide: "L,M,H"
     },
     {
@@ -62,7 +62,7 @@ let SPOTS = [
         minSwell: 90,
         maxSwell: 225,
         minWind: "315, 0",
-        maxWind: "359, 45", 
+        maxWind: "360, 45", 
         tide: "L,M,H"
     },
     {
@@ -73,7 +73,7 @@ let SPOTS = [
         minSwell: 90,
         maxSwell: 180,
         minWind: "315, 0",
-        maxWind: "359, 45",  
+        maxWind: "360, 45",  
         tide: "M,H"
     },
     {
@@ -84,7 +84,7 @@ let SPOTS = [
         minSwell: 125,
         maxSwell: 190,
         minWind: "315, 0",
-        maxWind: "359, 45", 
+        maxWind: "360, 45", 
         tide: "L,M,H"
     },
     {
@@ -208,5 +208,5 @@ let SPOTS = [
         maxWind: 90,
         tide: "M,H"
     },
-]
+];
 

@@ -1,15 +1,25 @@
+body {
+background-image: url('../images/surfAppBackground.jpg');
+}
+
 header {
     text-align: center;
+    font-family: 'Chivo', sans-serif;
+
 }
 
 .container {
+    display: flex;
 text-align: center;
+font-family: 'Overpass', sans-serif;
+border: 2px solid rgb(4, 4, 104);
 }
 
 .logo {
-    height: 240px;
-    display: block;
-    margin: 0 auto;
+    height: 142px;
+    /* display: flex; */
+    justify-content: center;
+    margin-top: 50px;
     padding-left: 43px;
 }
 
@@ -17,36 +27,34 @@ h2 {
     margin-top: -120px;
 }
 
-.container-left {
-border: 2px solid rgb(4, 4, 104);
-display: inline-block;
-width: 30%;
-margin-left: 10px;
-margin-right: 10px;
-}
-
-.container-right {
-border: 2px solid rgb(4, 4, 104);
-display: inline-block;
-width: 60%;
-margin-left: 10px;
-margin-right: 10px;
-}
-
 .info-boxes {
-    display: flex;
+    /* display: flex; */
     justify-content: space-evenly;
-    ;
+    align-items: flex-end;
 }
 
 .info-boxes > li {
     height: 140px;
     width: 100px;
     border: 2px solid black;
+    list-style-type: none;
+}
+
+.info-boxes > div {
+    /* display: flex; */
+    justify-content: center;
+    align-items: flex-start;
+
+}
+
+.info-boxes p {
+    /* display: flex; */
+    align-items: center;
+    justify-content: center;
 }
 
 .star-image {
-    display: flex;
+    /* display: flex; */
     flex-direction: row;
     height: 35px;
     
@@ -55,6 +63,10 @@ margin-right: 10px;
 .star-box {
     display: inline-flex;
     justify-content: flex-start;
-    
+    align-items: center;
 }
 
+/* Chivo- headers
+    Overpass- body */
+
+/* #FFFFFF | #222222 | #565656 | #E5EBEB | #1549D7 */
