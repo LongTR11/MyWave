@@ -65,19 +65,23 @@ function createResultMap(data) {
         let swellDirection = 0;
         let windSpeed = 0;
         let windDirection = 0;
+        let swellHeight = 0;
+        let swellPeriod = 0;
 
 
         if (d.swellPeriod[1] && d.swellHeight[1] && d.swellDirection[1] && d.windSpeed[1] && d.windDirection[1]) {
-            initialWaveRating = d.swellPeriod[1].value * (d.swellHeight[1].value) * 3.28084;
+            swellHeight = d.swellHeight[1].value * 3.28084;
+            initialWaveRating = Number(d.swellPeriod[1].value) * swellHeight;
             // 3.28084 is the conversion for meters to feet
             swellDirection = d.swellDirection[1].value;
-            windSpeed = d.windSpeed[1].value;
+            windSpeed = Number(d.windSpeed[1].value) * 2.23694;
             windDirection = d.windDirection[1].value;
+            swellPeriod = d.swellPeriod[1].value;
         }
 
 
         return {
-            initialWaveRating, swellDirection, windSpeed, windDirection
+            initialWaveRating, swellDirection, windSpeed, windDirection, swellHeight, swellPeriod
         };
     })
 
@@ -132,51 +136,76 @@ function createRatingData(results) {
     return ratingFormula;
 }
 
+const NO_DATA = "Sorry! Not Enough Data At This Time";
+
 function ratingTemplate(rating) {
     let template = '';
     if (rating) {
-        for (let i = 0; i < rating; i++) {
-            template += `
-             <span class="star-box"><img class="star-image" src="images/starRating.jpeg"></span>
+        template = `
+            <i class="fas fa-star"></i>
             `;
-        }
+
     } else {
-        template = "Sorry! Not Enough Data For This Hour";
+        template = NO_DATA;
     }
 
     return template;
 }
 
-// This template displays beginner-level content on the UI. This is the default view.
+function getAzimuth(deg) {
+    if ((deg >= 337.5 && deg <= 360) || (deg >= 0 && deg <= 22.5)) {
+        return 'N';
+    }
+}
+//
 function beginnerTemplate(dayOneResults) {
+    let starTemplate = '';
+    let dayOneRating = createRatingData(dayOneResults);
+    let validResult = {};
+    let hours = Object.keys(dayOneRating);
+    for (let h=0; h < dayOneResults.length; h++) {
+        hour = hours[h];
+        if (dayOneRating[hour]) {
+            validResult= dayOneResults[h];
+            starTemplate = `
+                <div>${hour}: ${ratingTemplate(dayOneRating[hour])}</div>
+            `;
+            break;
+        }
+    }
+
     let dayOneTemplate = `
     <section role="section" class="container-left">
     <p> Surf Ratings for ${someBeach.name} </p>
+    ${starTemplate}
 </section>
 <section role="section">
     <ul class="info-boxes">
         <li>
             <div>Swell</div>
-                <p>A</p>
+                <p>${validResult.swellHeight.toFixed(2)} feet @</p>
+                <p>${validResult.swellPeriod.toFixed(2)} seconds</p>
         </li>
         <li>
             <div>Wind</div>
-                <p>B</p>
+                <p>${validResult.windSpeed.toFixed(2)} mph @</p>
+                <p>${getAzimuth(validResult.windDirection)}</p>
         </li>
         <li>
             <div>Tide</div>
-                <p>C</p>
+                <p>Best @ ${someBeach.tide}</p>
         </li>   
     </ul>   
 </section>
 `;
-    let dayOneRating = createRatingData(dayOneResults);
-    for (let hour in dayOneRating) {
-        dayOneTemplate += `
-            <div>${hour}: ${ratingTemplate(dayOneRating[hour])}</div>
-        `;
-    }
-    $('.container').html(dayOneTemplate);
+
+$('main').before(`
+    <header role="banner" class="nav">
+        <img class="navLogo" src="images/mywave.png">
+            <button type="button" class="backButton">Back</button>
+    </header>
+`)
+$('.container').html(dayOneTemplate);
 }
 
 

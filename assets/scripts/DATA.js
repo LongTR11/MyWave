@@ -8,7 +8,7 @@ let SPOTS = [
         maxSwell: 180,
         minWind: 225,
         maxWind: 315,
-        tide: "L,M"   
+        tide: "Low to Mid"   
     },
     {
         state: "Virginia",
@@ -19,7 +19,7 @@ let SPOTS = [
         maxSwell: 180,
         minWind: 225,
         maxWind: 315,
-        tide: "L,M,H"
+        tide: "Any"
     },
     {
         state: "North Carolina",
@@ -30,7 +30,7 @@ let SPOTS = [
         maxSwell: 180,
         minWind: 225,
         maxWind: 315,
-        tide: "L,M"
+        tide: "Low to Mid"
     },
     {
         state: "North Carolina",
@@ -41,7 +41,7 @@ let SPOTS = [
         maxSwell: 180,
         minWind: 225,
         maxWind: 315,
-        tide: "L,M"
+        tide: "Low to Mid"
     },
     {
         state: "North Carolina",
@@ -52,7 +52,7 @@ let SPOTS = [
         maxSwell: 225,
         minWind: [315, 360],
         maxWind: [0, 45], 
-        tide: "L,M,H"
+        tide: "Any"
     },
     {
         state: "North Carolina",
@@ -63,7 +63,7 @@ let SPOTS = [
         maxSwell: 225,
         minWind: "315, 0",
         maxWind: "360, 45", 
-        tide: "L,M,H"
+        tide: "Any"
     },
     {
         state: "North Carolina",
@@ -74,7 +74,7 @@ let SPOTS = [
         maxSwell: 180,
         minWind: "315, 0",
         maxWind: "360, 45",  
-        tide: "M,H"
+        tide: "Mid to High"
     },
     {
         state: "South Carolina",
@@ -85,7 +85,7 @@ let SPOTS = [
         maxSwell: 190,
         minWind: "315, 0",
         maxWind: "360, 45", 
-        tide: "L,M,H"
+        tide: "Any"
     },
     {
         state: "South Carolina",
@@ -96,7 +96,7 @@ let SPOTS = [
         maxSwell: 180,
         minWind: 270,
         maxWind: 359, 
-        tide: "L,M,"
+        tide: "Low to Mid,"
     },
     {
         state: "South Carolina",
@@ -107,7 +107,7 @@ let SPOTS = [
         maxSwell: 180,
         minWind: 270,
         maxWind: 359, 
-        tide: "L,M,H"
+        tide: "Any"
     },
     {
         state: "South Carolina",
@@ -118,7 +118,7 @@ let SPOTS = [
         maxSwell: 135,
         minWind: 225,
         maxWind: 315, 
-        tide: "H"
+        tide: "High Only"
     },
     {
         state: "Florida(East Coast)",
@@ -129,7 +129,7 @@ let SPOTS = [
         maxSwell: 180,
         minWind: 180,
         maxWind: 270, 
-        tide: "L,M,H"
+        tide: "Any"
     },
     {
         state: "Florida(East Coast)",
@@ -140,7 +140,7 @@ let SPOTS = [
         maxSwell: 180,
         minWind: 180,
         maxWind: 270, 
-        tide: "M,H"
+        tide: "Mid to High"
     },
     {
         state: "Florida(East Coast)",
@@ -151,7 +151,7 @@ let SPOTS = [
         maxSwell: 135,
         minWind: 225,
         maxWind: 315, 
-        tide: "M,H"
+        tide: "Mid to High"
     },
     {
         state: "Florida(East Coast)",
@@ -162,7 +162,7 @@ let SPOTS = [
         maxSwell: 135,
         minWind: 225,
         maxWind: 315, 
-        tide: "L,M"
+        tide: "Low to Mid"
     },
     {
         state: "California",
@@ -173,7 +173,7 @@ let SPOTS = [
         maxSwell: 315,
         minWind: 45,
         maxWind: 135,
-        tide: "L,M"
+        tide: "Low to Mid"
     },
     {
         state: "California",
@@ -184,7 +184,7 @@ let SPOTS = [
         maxSwell: 270,
         minWind: 0,
         maxWind: 90,
-        tide: "L,M,H"
+        tide: "Any"
     },
     {
         state: "California",
@@ -195,7 +195,7 @@ let SPOTS = [
         maxSwell: 359,
         minWind: 0,
         maxWind: 90,
-        tide: "L,M"
+        tide: "Low to Mid"
     },
     {
         state: "California",
@@ -206,7 +206,7 @@ let SPOTS = [
         maxSwell: 315,
         minWind: 0,
         maxWind: 90,
-        tide: "M,H"
+        tide: "Mid to High"
     },
 ];
 
