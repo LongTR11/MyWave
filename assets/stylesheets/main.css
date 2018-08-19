@@ -50,8 +50,18 @@ padding: 1em;
     top: 6px;
 }
 
+.backButton {
+    position: absolute:
+    right:  10px;
+}
+
+
 header {
     padding: 6px;
+}
+
+.fa-star {
+    color: gold;
 }
 
 .info-boxes {

@@ -96,7 +96,7 @@ let SPOTS = [
         maxSwell: 180,
         minWind: 270,
         maxWind: 359, 
-        tide: "Low to Mid,"
+        tide: "Low to Mid"
     },
     {
         state: "South Carolina",

@@ -55,13 +55,12 @@ $('form').submit(function (event) {
 function createResultMap(data) {
     data = JSON.parse(data);
     console.log(data);
-    let dayOneData = [];
+    let oceanData = [];
     for (let i = 0; i < 6; i++) {
-        dayOneData.push(data.hours[i])
+        oceanData.push(data.hours[i])
     };
-    let dayOneResultMap = dayOneData.map(function (d) {
+    let resultMap = oceanData.map(function (d) {
         let initialWaveRating = 0;
-        // 3.28084 is the conversion for meters to feet
         let swellDirection = 0;
         let windSpeed = 0;
         let windDirection = 0;
@@ -86,8 +85,8 @@ function createResultMap(data) {
     })
 
 
-    console.log(dayOneResultMap);
-    beginnerTemplate(dayOneResultMap);
+    console.log(resultMap);
+    appTemplate(resultMap);
 }
 populateLocationsDropdown();
 
@@ -114,18 +113,21 @@ function evaluateWindRange(test, minWindRange, maxWindRange) {
 // Put all math conditional stuff in here 
 function createRatingData(results) {
     let ratingFormula = {};
-    let currentHour = new Date().getHours() + 1;
+    let currentHour = new Date().getHours();
     const indexMap = { 0: `${calculateHour(currentHour)}:00`, 1: `${calculateHour(currentHour + 1)}:00`, 2: `${calculateHour(currentHour + 2)}:00`, 3: `${calculateHour(currentHour + 3)}:00`, 4: `${calculateHour(currentHour + 4)}:00`, 5: `${calculateHour(currentHour + 5)}:00` };
     for (let h = 0; h < results.length; h++) {
         if (results[h].initialWaveRating && results[h].swellDirection && results[h].windDirection && results[h].windSpeed) {
             let initialRating = Math.round(3 + results[h].initialWaveRating / 8);
-            if (!(inRange(results[h].swellDirection, someBeach.minSwell, someBeach.maxSwell)) || (results[h].windSpeed > 14 && (!(evaluateWindRange(results[h].windDirection, someBeach.minWind, someBeach.maxWind))))) {
-                initialRating = 1;
+            if (!(inRange(results[h].swellDirection, someBeach.minSwell, someBeach.maxSwell)) || (results[h].windSpeed > 18 && (!(evaluateWindRange(results[h].windDirection, someBeach.minWind, someBeach.maxWind))))) {
+                initialRating = 5;
             }
-            else if ((results[h].windSpeed > 6 && results[h].windSpeed < 14) && (!(evaluateWindRange(results[h].windDirection, someBeach.minWind, someBeach.maxWind)))) {
+            if ((results[h].windSpeed > 6 && results[h].windSpeed <= 10) && (!(evaluateWindRange(results[h].windDirection, someBeach.minWind, someBeach.maxWind)))) {
+                initialRating -= 1;
+            }
+            if ((results[h].windSpeed >10  && results[h].windSpeed <= 18) && (!(evaluateWindRange(results[h].windDirection, someBeach.minWind, someBeach.maxWind)))) {
                 initialRating -= 2;
             }
-            else if ((results[h].windSpeed > 6 && results[h].windSpeed < 16) && (evaluateWindRange(results[h].windDirection, someBeach.minWind, someBeach.maxWind))) {
+            if ((results[h].windSpeed > 6 && results[h].windSpeed < 18) && (evaluateWindRange(results[h].windDirection, someBeach.minWind, someBeach.maxWind))) {
                 initialRating += 1;
             }
             ratingFormula[indexMap[h]] = initialRating;
@@ -134,8 +136,9 @@ function createRatingData(results) {
     }
 
     return ratingFormula;
-}
+    console.log(initialRating);
 
+}
 const NO_DATA = "Sorry! Not Enough Data At This Time";
 
 function ratingTemplate(rating) {
@@ -153,28 +156,49 @@ function ratingTemplate(rating) {
 }
 
 function getAzimuth(deg) {
-    if ((deg >= 337.5 && deg <= 360) || (deg >= 0 && deg <= 22.5)) {
+    if ((deg > 337.5 && deg <= 360) || (deg >= 0 && deg <= 22.5)) {
         return 'N';
+    }
+    else if (deg > 22.5 && deg <= 67.5) {
+        return 'NE';
+    }
+    else if (deg > 67.5 && deg <= 112.5) {
+        return 'E';
+    }
+    else if (deg > 112.5 && deg <= 157.5) {
+        return 'SE';
+    }
+    else if (deg > 157.5 && deg <= 202.5) {
+        return 'S';
+    }
+    else if (deg > 202.5 && deg <= 247.5) {
+        return 'SW';
+    }
+    else if (deg > 247.5 && deg <= 292.5) {
+        return 'W';
+    }
+    else if (deg > 292.5 && deg <= 337.5) {
+        return 'NW';
     }
 }
 //
-function beginnerTemplate(dayOneResults) {
+function appTemplate(hourlyResults) {
     let starTemplate = '';
-    let dayOneRating = createRatingData(dayOneResults);
+    let hourlyRating = createRatingData(hourlyResults);
     let validResult = {};
-    let hours = Object.keys(dayOneRating);
-    for (let h=0; h < dayOneResults.length; h++) {
+    let hours = Object.keys(hourlyRating);
+    for (let h=0; h < hourlyResults.length; h++) {
         hour = hours[h];
-        if (dayOneRating[hour]) {
-            validResult= dayOneResults[h];
+        if (hourlyRating[hour]) {
+            validResult= hourlyResults[h];
             starTemplate = `
-                <div>${hour}: ${ratingTemplate(dayOneRating[hour])}</div>
+                <div>${hour}: ${ratingTemplate(hourlyRating[hour])}</div>
             `;
             break;
         }
     }
 
-    let dayOneTemplate = `
+    let appTemplate = `
     <section role="section" class="container-left">
     <p> Surf Ratings for ${someBeach.name} </p>
     ${starTemplate}
@@ -188,8 +212,9 @@ function beginnerTemplate(dayOneResults) {
         </li>
         <li>
             <div>Wind</div>
-                <p>${validResult.windSpeed.toFixed(2)} mph @</p>
-                <p>${getAzimuth(validResult.windDirection)}</p>
+                <p>${getAzimuth(validResult.windDirection)} @</p>
+                <p>${validResult.windSpeed.toFixed(0)} mph </p>
+
         </li>
         <li>
             <div>Tide</div>
@@ -205,7 +230,7 @@ $('main').before(`
             <button type="button" class="backButton">Back</button>
     </header>
 `)
-$('.container').html(dayOneTemplate);
+$('.container').html(appTemplate);
 }
 
 
