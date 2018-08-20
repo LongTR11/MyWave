@@ -135,19 +135,18 @@ function createRatingData(results) {
             ratingFormula[indexMap[h]] = false;
     }
 
-    return ratingFormula;
-    console.log(initialRating);
-
+    return ratingFormula / 2;
 }
 const NO_DATA = "Sorry! Not Enough Data At This Time";
 
 function ratingTemplate(rating) {
     let template = '';
     if (rating) {
+        for (let i = 0; i < rating; i++) {
         template = `
             <i class="fas fa-star"></i>
             `;
-
+        }
     } else {
         template = NO_DATA;
     }
@@ -227,7 +226,7 @@ function appTemplate(hourlyResults) {
 $('main').before(`
     <header role="banner" class="nav">
         <img class="navLogo" src="images/mywave.png">
-            <button type="button" class="backButton">Back</button>
+            <button type="button" class="enjoy-css">Back</button>
     </header>
 `)
 $('.container').html(appTemplate);
