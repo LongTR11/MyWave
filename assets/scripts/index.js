@@ -44,13 +44,17 @@ function populateLocationsDropdown() {
 }
 
 
-// This event listener loads the basic view of the app with the selected beach's ratings when the user clicks "GO!"
+// This event listener renders the app with the selected beach's ratings when the user clicks "GO!"
 $('form').submit(function (event) {
     event.preventDefault();
     let chosenBeach = $('#js-locations').val()
     getApiData(chosenBeach, createResultMap);
 })
+// FINISH BACK BUTTON EVENT HANDLER
+$('.container').click('.event-css', function (event) {
+    $('.appTemplate').html('container');
 
+})
 
 function createResultMap(data) {
     data = JSON.parse(data);
@@ -86,7 +90,7 @@ function createResultMap(data) {
 
 
     console.log(resultMap);
-    appTemplate(resultMap);
+    appTemplate(createResultMap);
 }
 populateLocationsDropdown();
 
@@ -116,7 +120,7 @@ function createRatingData(results) {
     let currentHour = new Date().getHours();
     const indexMap = { 0: `${calculateHour(currentHour)}:00`, 1: `${calculateHour(currentHour + 1)}:00`, 2: `${calculateHour(currentHour + 2)}:00`, 3: `${calculateHour(currentHour + 3)}:00`, 4: `${calculateHour(currentHour + 4)}:00`, 5: `${calculateHour(currentHour + 5)}:00` };
     for (let h = 0; h < results.length; h++) {
-        if (results[h].initialWaveRating && results[h].swellDirection && results[h].windDirection && results[h].windSpeed) {
+        if ((results[h].initialWaveRating) && (results[h].swellDirection) && (results[h].windDirection) && (results[h].windSpeed)) {
             let initialRating = Math.round(3 + results[h].initialWaveRating / 8);
             if (!(inRange(results[h].swellDirection, someBeach.minSwell, someBeach.maxSwell)) || (results[h].windSpeed > 18 && (!(evaluateWindRange(results[h].windDirection, someBeach.minWind, someBeach.maxWind))))) {
                 initialRating = 5;
@@ -143,7 +147,7 @@ function ratingTemplate(rating) {
     let template = '';
     if (rating) {
         for (let i = 0; i < rating; i++) {
-        template = `
+        template += `
             <i class="fas fa-star"></i>
             `;
         }
@@ -229,7 +233,7 @@ $('main').before(`
             <button type="button" class="enjoy-css">Back</button>
     </header>
 `)
-$('.container').html(appTemplate);
+$('.container').html('appTemplate');
 }
 
 
