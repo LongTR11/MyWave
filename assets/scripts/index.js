@@ -43,6 +43,31 @@ function populateLocationsDropdown() {
     }
 }
 
+const HOME_PAGE = `
+<h1>Welcome to
+<img class="logo" src="images/mywave.png">
+</h1>
+<h2>Where we believe that you don't have to be an expert to catch that perfect wave!</h2>
+
+<section role="section">
+<form>
+    <fieldset>
+        <legend>To begin, select a location from the following:</legend>
+        <label for="js-locations">Locations</label>
+        <select id="js-locations" required>
+            <option>Please Select One</option>
+        </select>
+    </fieldset>
+    <button class="spot-button" type="submit">GO!</button>
+</form>
+    <h3>How It Works:</h3>
+        <p>Choose your spot from the dropdown menu, and the soonest available forecast will be provided. Our complex formula takes all the guesswork out of it! You can now see what the conditions are like in one quick glimpse.</p>
+</section>
+<section role="section" id="js-rating">
+<p>StarS???</p>
+</section>
+`
+    ;
 
 // This event listener renders the app with the selected beach's ratings when the user clicks "GO!"
 $('form').submit(function (event) {
@@ -51,8 +76,8 @@ $('form').submit(function (event) {
     getApiData(chosenBeach, createResultMap);
 })
 // FINISH BACK BUTTON EVENT HANDLER
-$('.container').click('.event-css', function (event) {
-    $('.appTemplate').html('container');
+$('.container').click('.enjoy-css', function (event) {
+    $(appTemplate).html($(HOME_PAGE));
 
 })
 
@@ -90,9 +115,8 @@ function createResultMap(data) {
 
 
     console.log(resultMap);
-    appTemplate(createResultMap);
+    renderAppTemplate(resultMap);
 }
-populateLocationsDropdown();
 
 function calculateHour(hour) {
     if (hour > 24) {
@@ -128,18 +152,18 @@ function createRatingData(results) {
             if ((results[h].windSpeed > 6 && results[h].windSpeed <= 10) && (!(evaluateWindRange(results[h].windDirection, someBeach.minWind, someBeach.maxWind)))) {
                 initialRating -= 1;
             }
-            if ((results[h].windSpeed >10  && results[h].windSpeed <= 18) && (!(evaluateWindRange(results[h].windDirection, someBeach.minWind, someBeach.maxWind)))) {
+            if ((results[h].windSpeed > 10 && results[h].windSpeed <= 18) && (!(evaluateWindRange(results[h].windDirection, someBeach.minWind, someBeach.maxWind)))) {
                 initialRating -= 2;
             }
             if ((results[h].windSpeed > 6 && results[h].windSpeed < 18) && (evaluateWindRange(results[h].windDirection, someBeach.minWind, someBeach.maxWind))) {
                 initialRating += 1;
             }
-            ratingFormula[indexMap[h]] = initialRating;
+            ratingFormula[indexMap[h]] = initialRating / 2;
         } else
             ratingFormula[indexMap[h]] = false;
     }
 
-    return ratingFormula / 2;
+    return ratingFormula;
 }
 const NO_DATA = "Sorry! Not Enough Data At This Time";
 
@@ -147,7 +171,7 @@ function ratingTemplate(rating) {
     let template = '';
     if (rating) {
         for (let i = 0; i < rating; i++) {
-        template += `
+            template += `
             <i class="fas fa-star"></i>
             `;
         }
@@ -185,15 +209,15 @@ function getAzimuth(deg) {
     }
 }
 //
-function appTemplate(hourlyResults) {
+function renderAppTemplate(hourlyResults) {
     let starTemplate = '';
     let hourlyRating = createRatingData(hourlyResults);
     let validResult = {};
     let hours = Object.keys(hourlyRating);
-    for (let h=0; h < hourlyResults.length; h++) {
+    for (let h = 0; h < hourlyResults.length; h++) {
         hour = hours[h];
         if (hourlyRating[hour]) {
-            validResult= hourlyResults[h];
+            validResult = hourlyResults[h];
             starTemplate = `
                 <div>${hour}: ${ratingTemplate(hourlyRating[hour])}</div>
             `;
@@ -227,13 +251,17 @@ function appTemplate(hourlyResults) {
 </section>
 `;
 
-$('main').before(`
-    <header role="banner" class="nav">
-        <img class="navLogo" src="images/mywave.png">
-            <button type="button" class="enjoy-css">Back</button>
-    </header>
+    $('main').before(`
+<header role="banner" class="nav">
+<img class="navLogo" src="images/mywave.png">
+    <button type="button" class="enjoy-css">Back</button>
+</header>
 `)
-$('.container').html('appTemplate');
+    $('.container').html(appTemplate);
 }
 
-
+function renderHomePage() {
+    $('.container').html($(HOMEPAGE));
+    populateLocationsDropdown();
+}
+$(renderHomePage());
