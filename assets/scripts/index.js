@@ -239,6 +239,7 @@ function renderAppTemplate(hourlyResults) {
     <section role="region">
     <h1> Surf Ratings for ${someBeach.name} </h1>
     ${starTemplate}
+    <p>The rating given is based on data from the soonest available hour.</p>
     </section>
 <section role="region">
     <ul class="info-boxes">
