@@ -44,41 +44,34 @@ function populateLocationsDropdown() {
 }
 
 const HOME_PAGE = `
+
 <h1>Welcome to
-<img class="logo" src="images/mywave.png">
+    <img class="logo" src="images/mywave.png" alt="logo">
 </h1>
 <h2>Where we believe that you don't have to be an expert to catch that perfect wave!</h2>
 
-<section role="section">
-<form>
-    <fieldset>
-        <legend>To begin, select a location from the following:</legend>
-        <label for="js-locations">Locations</label>
-        <select id="js-locations" required>
-            <option>Please Select One</option>
-        </select>
-    </fieldset>
-    <button class="spot-button" type="submit">GO!</button>
-</form>
-    <h3>How It Works:</h3>
-        <p>Choose your spot from the dropdown menu, and the soonest available forecast will be provided. Our complex formula takes all the guesswork out of it! You can now see what the conditions are like in one quick glimpse.</p>
-</section>
-<section role="section" id="js-rating">
-<p>StarS???</p>
+<section role="region">
+    <form>
+        <fieldset aria-live="assertive">
+            <legend>To begin, select a location from the following:</legend>
+            <label for="js-locations">Locations</label>
+            <select id="js-locations" required>
+                <option>Please Select One</option>
+            </select>
+        </fieldset>
+        <button class="go-button enjoy-css" type="submit">GO!</button>
+    </form>
+        <h3>How It Works:</h3>
+            <p>Choose your spot from the dropdown menu, and the soonest available forecast will be provided. Our complex formula takes all the guesswork out of it! You can now see what the conditions are like in one quick glimpse.</p>
 </section>
 `
-    ;
+;
 
-// This event listener renders the app with the selected beach's ratings when the user clicks "GO!"
-$('form').submit(function (event) {
-    event.preventDefault();
-    let chosenBeach = $('#js-locations').val()
-    getApiData(chosenBeach, createResultMap);
-})
+
 // FINISH BACK BUTTON EVENT HANDLER
-$('.container').click('.enjoy-css', function (event) {
-    $(appTemplate).html($(HOME_PAGE));
-
+$('body').on('click','#back-button', function (event) {
+    $('header').remove();
+    renderHomePage();
 })
 
 function createResultMap(data) {
@@ -96,15 +89,20 @@ function createResultMap(data) {
         let swellHeight = 0;
         let swellPeriod = 0;
 
+        let noaaSwellPeriod = d.swellPeriod.find(swellPeriod => swellPeriod.source == "sg");
+        let noaaSwellHeight = d.swellHeight.find(swellHeight => swellHeight.source == "sg");
+        let noaaSwellDirection = d.swellDirection.find(swellDirection => swellDirection.source == "sg");
+        let noaaWindSpeed= d.windSpeed.find(windSpeed => windSpeed.source == "sg");
+        let noaaWindDirection = d.windDirection.find(windDirection => windDirection.source == "sg");
 
-        if (d.swellPeriod[1] && d.swellHeight[1] && d.swellDirection[1] && d.windSpeed[1] && d.windDirection[1]) {
-            swellHeight = d.swellHeight[1].value * 3.28084;
-            initialWaveRating = Number(d.swellPeriod[1].value) * swellHeight;
+        if (noaaSwellPeriod && noaaSwellHeight && noaaSwellDirection && noaaWindSpeed && noaaWindDirection) {
+            swellHeight = noaaSwellHeight.value * 3.28084;
+            initialWaveRating = Number(noaaSwellPeriod.value) * swellHeight;
             // 3.28084 is the conversion for meters to feet
-            swellDirection = d.swellDirection[1].value;
-            windSpeed = Number(d.windSpeed[1].value) * 2.23694;
-            windDirection = d.windDirection[1].value;
-            swellPeriod = d.swellPeriod[1].value;
+            swellDirection = noaaSwellDirection.value;
+            windSpeed = Number(noaaWindSpeed.value) * 2.23694;
+            windDirection = noaaWindDirection.value;
+            swellPeriod = noaaSwellPeriod.value;
         }
 
 
@@ -145,9 +143,10 @@ function createRatingData(results) {
     const indexMap = { 0: `${calculateHour(currentHour)}:00`, 1: `${calculateHour(currentHour + 1)}:00`, 2: `${calculateHour(currentHour + 2)}:00`, 3: `${calculateHour(currentHour + 3)}:00`, 4: `${calculateHour(currentHour + 4)}:00`, 5: `${calculateHour(currentHour + 5)}:00` };
     for (let h = 0; h < results.length; h++) {
         if ((results[h].initialWaveRating) && (results[h].swellDirection) && (results[h].windDirection) && (results[h].windSpeed)) {
-            let initialRating = Math.round(3 + results[h].initialWaveRating / 8);
+            let initialRating = 2 + Math.round(results[h].initialWaveRating / 8);
+            
             if (!(inRange(results[h].swellDirection, someBeach.minSwell, someBeach.maxSwell)) || (results[h].windSpeed > 18 && (!(evaluateWindRange(results[h].windDirection, someBeach.minWind, someBeach.maxWind))))) {
-                initialRating = 5;
+                initialRating = 1;
             }
             if ((results[h].windSpeed > 6 && results[h].windSpeed <= 10) && (!(evaluateWindRange(results[h].windDirection, someBeach.minWind, someBeach.maxWind)))) {
                 initialRating -= 1;
@@ -165,20 +164,22 @@ function createRatingData(results) {
 
     return ratingFormula;
 }
-const NO_DATA = "Sorry! Not Enough Data At This Time";
 
 function ratingTemplate(rating) {
+    let needHalfStar = !((rating * 2) % 2 === 0);
+    rating = Math.floor(rating);
     let template = '';
-    if (rating) {
+
         for (let i = 0; i < rating; i++) {
             template += `
             <i class="fas fa-star"></i>
             `;
         }
-    } else {
-        template = NO_DATA;
-    }
-
+        if (needHalfStar) {
+            template += `
+            <i class="fas fa-star-half"></i>
+            `;
+        }
     return template;
 }
 
@@ -208,7 +209,7 @@ function getAzimuth(deg) {
         return 'NW';
     }
 }
-//
+
 function renderAppTemplate(hourlyResults) {
     let starTemplate = '';
     let hourlyRating = createRatingData(hourlyResults);
@@ -224,44 +225,65 @@ function renderAppTemplate(hourlyResults) {
             break;
         }
     }
+    const NO_DATA = `    <section role="region">
+    <h1>Surf Ratings for ${someBeach.name}</h1>
+    <p> Sorry! No Data...</p>
+    </section>`
+    ;
+    let appTemplate = NO_DATA;
+    
+    if (Object.keys(validResult).length) {
 
-    let appTemplate = `
-    <section role="section" class="container-left">
-    <p> Surf Ratings for ${someBeach.name} </p>
+    appTemplate = 
+    `
+    <section role="region">
+    <h1> Surf Ratings for ${someBeach.name} </h1>
     ${starTemplate}
-</section>
-<section role="section">
+    </section>
+<section role="region">
     <ul class="info-boxes">
         <li>
-            <div>Swell</div>
+            <div class="underline">Swell</div>
                 <p>${validResult.swellHeight.toFixed(2)} feet @</p>
                 <p>${validResult.swellPeriod.toFixed(2)} seconds</p>
         </li>
         <li>
-            <div>Wind</div>
+            <div class="underline">Wind</div>
                 <p>${getAzimuth(validResult.windDirection)} @</p>
                 <p>${validResult.windSpeed.toFixed(0)} mph </p>
 
         </li>
         <li>
-            <div>Tide</div>
+            <div class="underline">Tide</div>
                 <p>Best @ ${someBeach.tide}</p>
         </li>   
     </ul>   
 </section>
+    
 `;
+    }
 
     $('main').before(`
 <header role="banner" class="nav">
-<img class="navLogo" src="images/mywave.png">
-    <button type="button" class="enjoy-css">Back</button>
+<img class="navLogo left" src="images/mywave.png" alt="nav bar logo">
+    <button type="button" id="back-button" class="enjoy-css right margin-top-x1">Back</button>
 </header>
 `)
     $('.container').html(appTemplate);
 }
 
 function renderHomePage() {
-    $('.container').html($(HOMEPAGE));
+    $('.container').html($(HOME_PAGE));
     populateLocationsDropdown();
+   
+ // This event listener renders the app with the selected beach's ratings when the user clicks "GO!"
+$('form').submit(function (event) {
+    event.preventDefault();
+    let chosenBeach = $('#js-locations').val()
+    getApiData(chosenBeach, createResultMap);
+})
 }
+
 $(renderHomePage());
+
+                        
