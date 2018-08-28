@@ -148,7 +148,8 @@ fieldset {
     border: 2.5px solid rgb(18, 63, 187);
     -webkit-border-radius: 40px;
     border-radius: 40px;
-    font: bold 20px "Advent Pro", Helvetica, sans-serif;
+    font-style: bold;
+    font-size: 20px;
     color: rgb(18, 63, 187);
     text-align: center;
     -o-text-overflow: clip;
