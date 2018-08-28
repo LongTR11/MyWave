@@ -11,7 +11,7 @@ function getApiData(beach, callback) {
     currentTime.setHours(currentHour, 0, 0, 0);
     console.log(currentTime.getTime() / 1000);
     $.ajax({
-        url: `http://localhost:3000/point?lat=${someBeach.lat}&lng=${someBeach.lng}&start=${currentTime.getTime() / 1000}`,
+        url: `https://mywave-inc.herokuapp.com/point?lat=${someBeach.lat}&lng=${someBeach.lng}&start=${currentTime.getTime() / 1000}`,
         dataType: 'json',
         contentType: 'application/json',
         success: callback
