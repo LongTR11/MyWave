@@ -13,8 +13,8 @@ let SPOTS = [
     {
         state: "Virginia",
         name: "Virginia Beach",
-        lat: 36.7956694,
-        lng: -76.0126285,
+        lat:36.853000,
+        lng: -75.977400,
         minSwell: 0,
         maxSwell: 180,
         minWind: 225,
@@ -112,8 +112,8 @@ let SPOTS = [
     {
         state: "South Carolina",
         name: "Hunting Island",
-        lat: 34.4953986,
-        lng: -87.9698961,
+        lat: 32.374657,
+        lng: -80.438225,
         minSwell: 45,
         maxSwell: 135,
         minWind: 225,

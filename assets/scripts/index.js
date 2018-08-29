@@ -1,6 +1,7 @@
 let someBeach;
 
 function getApiData(beach, callback) {
+    $('.loading').show();
     someBeach = SPOTS.find(function (b) {
         return b.name === beach;
     });
@@ -46,13 +47,13 @@ function populateLocationsDropdown() {
 const HOME_PAGE = `
 
 <h1>Welcome to
-    <img class="logo" src="images/mywave.png" alt="logo">
+    <img class="logo" src="images/mywave.png" alt="myWave">
 </h1>
 <h2>Where we believe that you don't have to be an expert to catch that perfect wave!</h2>
 
 <section role="region">
     <form>
-        <fieldset aria-live="assertive">
+        <fieldset>
             <legend>To begin, select a location from the following:</legend>
             <label for="js-locations">Locations</label>
             <select id="js-locations" required>
@@ -140,6 +141,7 @@ function evaluateWindRange(test, minWindRange, maxWindRange) {
 function createRatingData(results) {
     let ratingFormula = {};
     let currentHour = new Date().getHours();
+    let tooWindy = false;
     const indexMap = { 0: `${calculateHour(currentHour)}:00`, 1: `${calculateHour(currentHour + 1)}:00`, 2: `${calculateHour(currentHour + 2)}:00`, 3: `${calculateHour(currentHour + 3)}:00`, 4: `${calculateHour(currentHour + 4)}:00`, 5: `${calculateHour(currentHour + 5)}:00` };
     for (let h = 0; h < results.length; h++) {
         if ((results[h].initialWaveRating) && (results[h].swellDirection) && (results[h].windDirection) && (results[h].windSpeed)) {
@@ -147,17 +149,20 @@ function createRatingData(results) {
             
             if (!(inRange(results[h].swellDirection, someBeach.minSwell, someBeach.maxSwell)) || (results[h].windSpeed > 18 && (!(evaluateWindRange(results[h].windDirection, someBeach.minWind, someBeach.maxWind))))) {
                 initialRating = 1;
+                if (results[h].windSpeed > 18) {
+                    tooWindy = true;
+                }
             }
             if ((results[h].windSpeed > 6 && results[h].windSpeed <= 10) && (!(evaluateWindRange(results[h].windDirection, someBeach.minWind, someBeach.maxWind)))) {
                 initialRating -= 1;
             }
             if ((results[h].windSpeed > 10 && results[h].windSpeed <= 18) && (!(evaluateWindRange(results[h].windDirection, someBeach.minWind, someBeach.maxWind)))) {
-                initialRating -= 2;
+                initialRating -= 1.5;
             }
             if ((results[h].windSpeed > 6 && results[h].windSpeed < 18) && (evaluateWindRange(results[h].windDirection, someBeach.minWind, someBeach.maxWind))) {
                 initialRating += 1;
             }
-            ratingFormula[indexMap[h]] = initialRating / 2;
+            ratingFormula[indexMap[h]] = {value: initialRating / 2, tooWindy: tooWindy};
         } else
             ratingFormula[indexMap[h]] = false;
     }
@@ -215,12 +220,13 @@ function renderAppTemplate(hourlyResults) {
     let hourlyRating = createRatingData(hourlyResults);
     let validResult = {};
     let hours = Object.keys(hourlyRating);
+    let hour;
     for (let h = 0; h < hourlyResults.length; h++) {
         hour = hours[h];
         if (hourlyRating[hour]) {
             validResult = hourlyResults[h];
             starTemplate = `
-                <div>${hour}: ${ratingTemplate(hourlyRating[hour])}</div>
+                <div>${hour}: ${ratingTemplate(hourlyRating[hour].value)}</div>
             `;
             break;
         }
@@ -262,15 +268,21 @@ function renderAppTemplate(hourlyResults) {
 </section>
     
 `;
+if (hourlyRating[hour].tooWindy) {
+    appTemplate += `
+    <div>Sorry mate! A bit too windy to surf today...</div>
+    `
+}
     }
 
     $('main').before(`
 <header role="banner" class="nav">
-<img class="navLogo left" src="images/mywave.png" alt="nav bar logo">
+<img class="navLogo left" src="images/mywave.png" alt="myWave">
     <button type="button" id="back-button" class="enjoy-css right margin-top-x1">Back</button>
 </header>
 `)
     $('.container').html(appTemplate);
+    $('.loading').hide();
 }
 
 function renderHomePage() {
