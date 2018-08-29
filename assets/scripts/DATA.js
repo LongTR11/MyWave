@@ -208,5 +208,41 @@ let SPOTS = [
         maxWind: 90,
         tide: "Mid to High"
     },
-];
+    // from here down: check the weather conditions!
+    {
+        state: "California",
+        name: "Oceanside Beach",
+        lat: 33.196808,
+        lng: -117.384940,
+        minSwell: 180,
+        maxSwell: 315,
+        minWind: 0,
+        maxWind: 90,
+        tide: "Mid to High"
+    },
+    {
+        state: "California",
+        name: "Cardiff State Beach",
+        lat: 33.015293,
+        lng: -117.279240,
+        minSwell: 180,
+        maxSwell: 315,
+        minWind: 0,
+        maxWind: 90,
+        tide: "Mid to High"
+    },
+    {
+        state: "California",
+        name: "Mission Beach",
+        lat: 32.782700,
+        lng: -117.252500,
+        minSwell: 180,
+        maxSwell: 315,
+        minWind: 0,
+        maxWind: 90,
+        tide: "Mid to High"
+    }
+
+]
+;
 

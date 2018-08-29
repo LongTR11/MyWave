@@ -3,9 +3,11 @@ require('dotenv').load();
 const express = require('express');
 const req = require('request');
 const path = require('path');
+const cors = require('cors');
 let app = express(),
     port = process.env.PORT || 3000;
 
+app.use(cors());
 app.use(express.static('assets'));
 app.listen(port);
 

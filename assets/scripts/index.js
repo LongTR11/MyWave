@@ -56,7 +56,7 @@ const HOME_PAGE = `
             <legend>To begin, select a location from the following:</legend>
             <label for="js-locations">Locations</label>
             <select id="js-locations" required>
-                <option>Please Select One</option>
+                <option value="">Please Select One</option>
             </select>
         </fieldset>
         <button class="go-button enjoy-css" type="submit">GO!</button>
