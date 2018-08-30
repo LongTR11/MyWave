@@ -6,17 +6,16 @@ function getApiData(beach, callback) {
         return b.name === beach;
     });
 
-    // let currentTime = Math.round(new Date().getTime() / 1000);
-    let currentTime = new Date();
-    let currentHour = currentTime.getHours() + 1;
+    const currentTime = new Date();
+    const currentHour = currentTime.getHours() + 1;
     currentTime.setHours(currentHour, 0, 0, 0);
-    console.log(currentTime.getTime() / 1000);
+
     $.ajax({
         url: `https://mywave-inc.herokuapp.com/point?lat=${someBeach.lat}&lng=${someBeach.lng}&start=${currentTime.getTime() / 1000}`,
         dataType: 'json',
         contentType: 'application/json',
         success: callback
-    })
+    });
 }
 
 function populateLocationsDropdown() {
@@ -26,10 +25,9 @@ function populateLocationsDropdown() {
             locations[spot.state] = [];
         }
         locations[spot.state].push(spot);
-    })
-    console.log(locations);
+    });
 
-    let locationsDropdown = $('#js-locations');
+    const locationsDropdown = $('#js-locations');
     for (let location in locations) {
         let optionsTemplate = '';
         locations[location].forEach(function (l) {
@@ -37,7 +35,7 @@ function populateLocationsDropdown() {
                 <option value="${l.name}">${l.name}</option>
             `;
         });
-        let optGroupTemplate = `
+        const optGroupTemplate = `
             <optgroup label="${location}">${optionsTemplate}</optgroup>
         `;
         locationsDropdown.append(optGroupTemplate);
@@ -46,42 +44,38 @@ function populateLocationsDropdown() {
 
 const HOME_PAGE = `
 
-<h1>Welcome to
-    <img class="logo" src="images/mywave.png" alt="myWave">
-</h1>
-<h2>Where we believe that you don't have to be an expert to catch that perfect wave!</h2>
+    <h1>Welcome to
+        <img class="logo" src="images/mywave.png" alt="myWave">
+    </h1>
+    <h2>Where we believe that you don't have to be an expert to catch that perfect wave!</h2>
 
-<section role="region">
-    <form>
-        <fieldset>
-            <legend>To begin, select a location from the following:</legend>
-            <label for="js-locations">Locations</label>
-            <select id="js-locations" required>
-                <option value="">Please Select One</option>
-            </select>
-        </fieldset>
-        <button class="go-button enjoy-css" type="submit">GO!</button>
-    </form>
-        <h3>How It Works:</h3>
-            <p>Choose your spot from the dropdown menu, and the soonest available forecast will be provided. Our complex formula takes all the guesswork out of it! You can now see what the conditions are like in one quick glimpse.</p>
-</section>
-`
-;
+    <section role="region">
+        <form>
+            <fieldset>
+                <legend>To begin, select a location from the following:</legend>
+                <label for="js-locations">Locations</label>
+                <select id="js-locations" required>
+                    <option value="">Please Select One</option>
+                </select>
+            </fieldset>
+            <button class="go-button enjoy-css" type="submit">GO!</button>
+        </form>
+            <h3>How It Works:</h3>
+                <p>Choose your spot from the dropdown menu, and the soonest available forecast will be provided. Our complex formula takes all the guesswork out of it! You can now see what the conditions are like in one quick glimpse.</p>
+    </section>
+    `;
 
-
-// FINISH BACK BUTTON EVENT HANDLER
-$('body').on('click','#back-button', function (event) {
+$('body').on('click', '#back-button', function (event) {
     $('header').remove();
     renderHomePage();
-})
+});
 
 function createResultMap(data) {
     data = JSON.parse(data);
-    console.log(data);
     let oceanData = [];
     for (let i = 0; i < 6; i++) {
         oceanData.push(data.hours[i])
-    };
+    }
     let resultMap = oceanData.map(function (d) {
         let initialWaveRating = 0;
         let swellDirection = 0;
@@ -90,10 +84,10 @@ function createResultMap(data) {
         let swellHeight = 0;
         let swellPeriod = 0;
 
-        let noaaSwellPeriod = d.swellPeriod.find(swellPeriod => swellPeriod.source == "sg");
+        let noaaSwellPeriod = d.swellPeriod.find(swellPeriod => swellPeriod.source === "sg");
         let noaaSwellHeight = d.swellHeight.find(swellHeight => swellHeight.source == "sg");
         let noaaSwellDirection = d.swellDirection.find(swellDirection => swellDirection.source == "sg");
-        let noaaWindSpeed= d.windSpeed.find(windSpeed => windSpeed.source == "sg");
+        let noaaWindSpeed = d.windSpeed.find(windSpeed => windSpeed.source == "sg");
         let noaaWindDirection = d.windDirection.find(windDirection => windDirection.source == "sg");
 
         if (noaaSwellPeriod && noaaSwellHeight && noaaSwellDirection && noaaWindSpeed && noaaWindDirection) {
@@ -110,10 +104,8 @@ function createResultMap(data) {
         return {
             initialWaveRating, swellDirection, windSpeed, windDirection, swellHeight, swellPeriod
         };
-    })
+    });
 
-
-    console.log(resultMap);
     renderAppTemplate(resultMap);
 }
 
@@ -131,7 +123,7 @@ function inRange(test, min, max) {
 }
 
 function evaluateWindRange(test, minWindRange, maxWindRange) {
-    if (typeof (minWindRange) == "object" && typeof (maxWindRange) == "object") {
+    if (typeof (minWindRange) === "object" && typeof (maxWindRange) == "object") {
         return (inRange(test, minWindRange[0], minWindRange[1])) && (inRange(test, maxWindRange[0], maxWindRange[1]));
     }
     return inRange(test, minWindRange, maxWindRange)
@@ -140,13 +132,13 @@ function evaluateWindRange(test, minWindRange, maxWindRange) {
 // Put all math conditional stuff in here 
 function createRatingData(results) {
     let ratingFormula = {};
-    let currentHour = new Date().getHours();
+    const currentHour = new Date().getHours();
     let tooWindy = false;
     const indexMap = { 0: `${calculateHour(currentHour)}:00`, 1: `${calculateHour(currentHour + 1)}:00`, 2: `${calculateHour(currentHour + 2)}:00`, 3: `${calculateHour(currentHour + 3)}:00`, 4: `${calculateHour(currentHour + 4)}:00`, 5: `${calculateHour(currentHour + 5)}:00` };
     for (let h = 0; h < results.length; h++) {
         if ((results[h].initialWaveRating) && (results[h].swellDirection) && (results[h].windDirection) && (results[h].windSpeed)) {
             let initialRating = 2 + Math.round(results[h].initialWaveRating / 8);
-            
+
             if (!(inRange(results[h].swellDirection, someBeach.minSwell, someBeach.maxSwell)) || (results[h].windSpeed > 18 && (!(evaluateWindRange(results[h].windDirection, someBeach.minWind, someBeach.maxWind))))) {
                 initialRating = 1;
                 if (results[h].windSpeed > 18) {
@@ -162,7 +154,7 @@ function createRatingData(results) {
             if ((results[h].windSpeed > 6 && results[h].windSpeed < 18) && (evaluateWindRange(results[h].windDirection, someBeach.minWind, someBeach.maxWind))) {
                 initialRating += 1;
             }
-            ratingFormula[indexMap[h]] = {value: initialRating / 2, tooWindy: tooWindy};
+            ratingFormula[indexMap[h]] = { value: initialRating / 2, tooWindy: tooWindy };
         } else
             ratingFormula[indexMap[h]] = false;
     }
@@ -171,20 +163,20 @@ function createRatingData(results) {
 }
 
 function ratingTemplate(rating) {
-    let needHalfStar = !((rating * 2) % 2 === 0);
+    const needHalfStar = !((rating * 2) % 2 === 0);
     rating = Math.floor(rating);
     let template = '';
 
-        for (let i = 0; i < rating; i++) {
-            template += `
+    for (let i = 0; i < rating; i++) {
+        template += `
             <i class="fas fa-star"></i>
             `;
-        }
-        if (needHalfStar) {
-            template += `
+    }
+    if (needHalfStar) {
+        template += `
             <i class="fas fa-star-half"></i>
             `;
-        }
+    }
     return template;
 }
 
@@ -217,9 +209,9 @@ function getAzimuth(deg) {
 
 function renderAppTemplate(hourlyResults) {
     let starTemplate = '';
-    let hourlyRating = createRatingData(hourlyResults);
+    const hourlyRating = createRatingData(hourlyResults);
     let validResult = {};
-    let hours = Object.keys(hourlyRating);
+    const hours = Object.keys(hourlyRating);
     let hour;
     for (let h = 0; h < hourlyResults.length; h++) {
         hour = hours[h];
@@ -231,18 +223,18 @@ function renderAppTemplate(hourlyResults) {
             break;
         }
     }
-    const NO_DATA = `    <section role="region">
+
+    const NO_DATA = `    
+    <section role="region">
     <h1>Surf Ratings for ${someBeach.name}</h1>
     <p> Sorry! No Data...</p>
-    </section>`
-    ;
-    let appTemplate = NO_DATA;
-    
-    if (Object.keys(validResult).length) {
+    </section>
+    `;
 
-    appTemplate = 
-    `
-    <section role="region">
+    let appTemplate = NO_DATA;
+    if (Object.keys(validResult).length) {
+        appTemplate = `
+<section role="region">
     <h1> Surf Ratings for ${someBeach.name} </h1>
     ${starTemplate}
     <p>The rating given is based on data from the soonest available hour.</p>
@@ -266,13 +258,12 @@ function renderAppTemplate(hourlyResults) {
         </li>   
     </ul>   
 </section>
-    
 `;
-if (hourlyRating[hour].tooWindy) {
-    appTemplate += `
-    <div>Sorry mate! A bit too windy to surf today...</div>
-    `
-}
+        if (hourlyRating[hour].tooWindy) {
+            appTemplate += `
+        <div>Sorry mate! A bit too windy to surf today...</div>
+        `
+        }
     }
 
     $('main').before(`
@@ -280,23 +271,23 @@ if (hourlyRating[hour].tooWindy) {
 <img class="navLogo left" src="images/mywave.png" alt="myWave">
     <button type="button" id="back-button" class="enjoy-css right margin-top-x1">Back</button>
 </header>
-`)
+`
+    );
     $('.container').html(appTemplate);
     $('.loading').hide();
 }
 
 function renderHomePage() {
-    $('.container').html($(HOME_PAGE));
+    $('.container').html(HOME_PAGE);
     populateLocationsDropdown();
-   
- // This event listener renders the app with the selected beach's ratings when the user clicks "GO!"
-$('form').submit(function (event) {
-    event.preventDefault();
-    let chosenBeach = $('#js-locations').val()
-    getApiData(chosenBeach, createResultMap);
-})
+
+    // This event listener renders the app with the selected beach's ratings when the user clicks "GO!"
+    $('form').submit(function (event) {
+        event.preventDefault();
+        let chosenBeach = $('#js-locations').val()
+        getApiData(chosenBeach, createResultMap);
+    });
 }
 
 $(renderHomePage());
 
-                        
