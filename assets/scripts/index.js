@@ -84,11 +84,11 @@ function createResultMap(data) {
         let swellHeight = 0;
         let swellPeriod = 0;
 
-        let noaaSwellPeriod = d.swellPeriod.find(swellPeriod => swellPeriod.source === "sg");
+        let noaaSwellPeriod = d.swellPeriod.find(swellPeriod => swellPeriod.source === "noaa");
         let noaaSwellHeight = d.swellHeight.find(swellHeight => swellHeight.source == "sg");
-        let noaaSwellDirection = d.swellDirection.find(swellDirection => swellDirection.source == "sg");
-        let noaaWindSpeed = d.windSpeed.find(windSpeed => windSpeed.source == "sg");
-        let noaaWindDirection = d.windDirection.find(windDirection => windDirection.source == "sg");
+        let noaaSwellDirection = d.swellDirection.find(swellDirection => swellDirection.source == "noaa");
+        let noaaWindSpeed = d.windSpeed.find(windSpeed => windSpeed.source == "noaa");
+        let noaaWindDirection = d.windDirection.find(windDirection => windDirection.source == "noaa");
 
         if (noaaSwellPeriod && noaaSwellHeight && noaaSwellDirection && noaaWindSpeed && noaaWindDirection) {
             swellHeight = noaaSwellHeight.value * 3.28084;
@@ -116,6 +116,12 @@ function calculateHour(hour) {
         hour = hour - 12;
     }
     return hour;
+}
+
+function calculateAMPM(hour) {
+    const currentHour = new Date().getHours();
+    hour = Number(hour.split(':')[0]);
+    return hour >= currentHour - 12 ? 'PM' : 'AM';
 }
 
 function inRange(test, min, max) {
@@ -218,7 +224,7 @@ function renderAppTemplate(hourlyResults) {
         if (hourlyRating[hour]) {
             validResult = hourlyResults[h];
             starTemplate = `
-                <div>${hour}: ${ratingTemplate(hourlyRating[hour].value)}</div>
+                <div>${hour}${calculateAMPM(hour)} : ${ratingTemplate(hourlyRating[hour].value)}</div>
             `;
             break;
         }
