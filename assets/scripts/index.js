@@ -143,7 +143,7 @@ function createRatingData(results) {
     const indexMap = { 0: `${calculateHour(currentHour)}:00`, 1: `${calculateHour(currentHour + 1)}:00`, 2: `${calculateHour(currentHour + 2)}:00`, 3: `${calculateHour(currentHour + 3)}:00`, 4: `${calculateHour(currentHour + 4)}:00`, 5: `${calculateHour(currentHour + 5)}:00` };
     for (let h = 0; h < results.length; h++) {
         if ((results[h].initialWaveRating) && (results[h].swellDirection) && (results[h].windDirection) && (results[h].windSpeed)) {
-            let initialRating = 2 + Math.round(results[h].initialWaveRating / 8);
+            initialRating = 2 + Math.round(results[h].initialWaveRating / 8);
 
             if (!(inRange(results[h].swellDirection, someBeach.minSwell, someBeach.maxSwell)) || (results[h].windSpeed > 18 && (!(evaluateWindRange(results[h].windDirection, someBeach.minWind, someBeach.maxWind))))) {
                 initialRating = 1;
@@ -159,6 +159,9 @@ function createRatingData(results) {
             }
             if ((results[h].windSpeed > 6 && results[h].windSpeed < 18) && (evaluateWindRange(results[h].windDirection, someBeach.minWind, someBeach.maxWind))) {
                 initialRating += 1;
+            }
+            if (initialRating <= 0) {
+                initialRating = 1;
             }
             ratingFormula[indexMap[h]] = { value: initialRating / 2, tooWindy: tooWindy };
         } else
